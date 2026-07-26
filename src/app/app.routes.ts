@@ -10,7 +10,11 @@ import { Earn } from './earn/earn';
 import { Cart } from './cart/cart';
 import { Search } from './search/search';
 import { InDevelopment } from './in-development/in-development';
+import { Earnings } from './earnings/earnings';
 import { authGuard } from './auth/auth.guard';
+import { adminGuard } from './auth/admin.guard';
+import { Admin } from './admin/admin';
+import { Orders } from './orders/orders';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -22,6 +26,9 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'referrals', component: Referrals, canActivate: [authGuard] },
   { path: 'network', component: Network, canActivate: [authGuard] },
+  { path: 'earnings', component: Earnings, canActivate: [authGuard] },
+  { path: 'orders', component: Orders, canActivate: [authGuard] },
+  { path: 'admin', component: Admin, canActivate: [adminGuard] },
   // Any URL without a dedicated page shows the in-development placeholder.
   { path: '**', component: InDevelopment }
 ];

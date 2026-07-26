@@ -20,6 +20,11 @@
             <div class="border-r h-3 border-gray-200"></div>
             <a class="text-[13px] link font-semibold" routerLink="/network">Network</a>
             <div class="border-r h-3 border-gray-200"></div>
+            <a class="text-[13px] link font-semibold" routerLink="/earnings">Earnings</a>
+            <div class="border-r h-3 border-gray-200"></div>
+            <a class="text-[13px] link font-semibold" routerLink="/orders">Orders</a>
+            <div class="border-r h-3 border-gray-200"></div>
+            @if (userService.isAdmin()) { <a class="text-[13px] link font-semibold" routerLink="/admin">Admin</a><div class="border-r h-3 border-gray-200"></div> }
             <span class="text-[13px] link font-semibold">Hi, {{ user.firstName }}</span>
             <div class="border-r h-3 border-gray-200"></div>
             <button type="button" class="text-[13px] link font-semibold" (click)="logout()">Logout</button>
@@ -106,6 +111,9 @@
           @if (currentUser(); as user) {
             <a class="text-white text-sm font-roboto py-2" routerLink="/referrals" (click)="closeMenu()">Referrals</a>
             <a class="text-white text-sm font-roboto py-2" routerLink="/network" (click)="closeMenu()">Network</a>
+            <a class="text-white text-sm font-roboto py-2" routerLink="/earnings" (click)="closeMenu()">Earnings</a>
+            <a class="text-white text-sm font-roboto py-2" routerLink="/orders" (click)="closeMenu()">Orders</a>
+            @if (userService.isAdmin()) { <a class="text-white text-sm font-roboto py-2" routerLink="/admin" (click)="closeMenu()">Admin</a> }
             <span class="text-white text-sm font-roboto py-2">Hi, {{ user.firstName }}</span>
             <button type="button" class="text-white text-sm font-roboto py-2 text-left" (click)="logout(); closeMenu()">Logout</button>
           } @else {

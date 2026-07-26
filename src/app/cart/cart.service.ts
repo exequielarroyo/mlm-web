@@ -40,20 +40,20 @@ export class CartService {
     });
   }
 
-  setQty(productId: number, qty: number): void {
+  setQty(productId: string | number, qty: number): void {
     const safeQty = Math.max(1, Math.floor(qty) || 1);
     this.items.update((items) =>
       items.map((item) => (item.product.id === productId ? { ...item, qty: safeQty } : item))
     );
   }
 
-  increment(productId: number): void {
+  increment(productId: string | number): void {
     this.items.update((items) =>
       items.map((item) => (item.product.id === productId ? { ...item, qty: item.qty + 1 } : item))
     );
   }
 
-  decrement(productId: number): void {
+  decrement(productId: string | number): void {
     this.items.update((items) =>
       items.map((item) =>
         item.product.id === productId ? { ...item, qty: Math.max(1, item.qty - 1) } : item
@@ -61,11 +61,11 @@ export class CartService {
     );
   }
 
-  remove(productId: number): void {
+  remove(productId: string | number): void {
     this.items.update((items) => items.filter((item) => item.product.id !== productId));
   }
 
-  toggleSelected(productId: number): void {
+  toggleSelected(productId: string | number): void {
     this.items.update((items) =>
       items.map((item) =>
         item.product.id === productId ? { ...item, selected: !item.selected } : item

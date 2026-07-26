@@ -64,8 +64,9 @@
           Total ({{ selectedCount() }} item{{ selectedCount() === 1 ? '' : 's' }}):
           <span class="text-primary text-xl font-semibold">{{ formatPeso(selectedTotal()) }}</span>
         </span>
-        <a routerLink="/checkout" class="btn-primary px-8">Check Out</a>
+        <button type="button" (click)="checkout()" class="btn-primary px-8">Check Out</button>
       </div>
+      @if (checkoutMessage()) { <p class="w-full text-sm text-primary">{{ checkoutMessage() }}</p> }
     </div>
   }
 </div>

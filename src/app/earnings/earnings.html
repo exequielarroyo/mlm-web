@@ -1,0 +1,10 @@
+<div class="xl:w-300 mx-auto px-4 py-8">
+  <h1 class="font-roboto text-2xl font-semibold text-primary dark:text-white mb-6">My earnings</h1>
+  <section class="grid gap-4 sm:grid-cols-3 mb-8">
+    <div class="rounded border border-line-light p-4"><p class="text-sm text-gray-500">Available</p><p class="text-2xl font-semibold text-primary">{{ formatPeso(summary()?.available ?? 0) }}</p></div>
+    <div class="rounded border border-line-light p-4"><p class="text-sm text-gray-500">Paid out</p><p class="text-2xl font-semibold text-primary">{{ formatPeso(summary()?.paid ?? 0) }}</p></div>
+    <div class="rounded border border-line-light p-4"><p class="text-sm text-gray-500">Reversed / recovery</p><p class="text-2xl font-semibold text-primary">{{ formatPeso((summary()?.reversed ?? 0) + (summary()?.recoveryRequired ?? 0)) }}</p></div>
+  </section>
+  <section class="mb-8 overflow-x-auto"><h2 class="font-semibold dark:text-white mb-3">Commission history</h2><table class="w-full text-sm"><thead><tr class="text-left border-b border-line-light"><th class="p-2">Buyer</th><th class="p-2">Level</th><th class="p-2">Rate</th><th class="p-2">Amount</th><th class="p-2">Status</th></tr></thead><tbody>@for (row of commissions(); track row.id) { <tr class="border-b border-line-light"><td class="p-2">{{ row.buyerName }}</td><td class="p-2">{{ row.level }}</td><td class="p-2">{{ row.rate * 100 }}%</td><td class="p-2 text-primary">{{ formatPeso(row.amount) }}</td><td class="p-2">{{ row.status }}</td></tr> } @empty { <tr><td colspan="5" class="p-4 text-gray-500">No commissions yet.</td></tr> }</tbody></table></section>
+  <section><h2 class="font-semibold dark:text-white mb-3">Payouts</h2><ul class="text-sm">@for (payout of payouts(); track payout.id) { <li class="border-b border-line-light p-2 flex justify-between"><span>{{ payout.status }}</span><span class="text-primary">{{ formatPeso(payout.amount) }}</span></li> } @empty { <li class="text-gray-500">No payouts yet.</li> }</ul></section>
+</div>

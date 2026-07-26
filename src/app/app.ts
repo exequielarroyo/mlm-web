@@ -16,7 +16,7 @@ import { Footer } from './footer/footer';
   styleUrl: './app.css',
 })
 export class App {
-  private readonly userService = inject(UserService);
+  protected readonly userService = inject(UserService);
   private readonly cart = inject(CartService);
   private readonly router = inject(Router);
 

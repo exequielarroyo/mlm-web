@@ -18,6 +18,7 @@ export class UserService {
   readonly token = signal<string | null>(this.readToken());
   readonly currentUser = signal<User | null>(null);
   readonly isAuthenticated = computed(() => this.token() !== null);
+  readonly isAdmin = computed(() => this.hasAdminRole(this.token()));
 
   register(request: RegisterRequest): Observable<User> {
     return this.http.post<User>(`${API_BASE}/register`, request);
@@ -79,5 +80,14 @@ export class UserService {
 
   private readToken(): string | null {
     return typeof localStorage === 'undefined' ? null : localStorage.getItem(TOKEN_KEY);
+  }
+
+  private hasAdminRole(token: string | null): boolean {
+    if (!token || typeof atob === 'undefined') return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? payload.role;
+      return Array.isArray(role) ? role.includes('Admin') : role === 'Admin';
+    } catch { return false; }
   }
 }

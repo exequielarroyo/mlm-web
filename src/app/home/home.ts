@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ProductCard } from '../products/product-card';
-import { PRODUCTS } from '../products/products.data';
+import { ProductService } from '../products/product.service';
+import { Product } from '../products/product.model';
 import { formatPeso } from '../products/product.model';
 
 @Component({
@@ -12,7 +13,8 @@ import { formatPeso } from '../products/product.model';
   templateUrl: './home.html',
 })
 export class Home {
-  protected readonly products = PRODUCTS;
+  private readonly productService = inject(ProductService);
+  protected readonly products = signal<Product[]>([]);
   protected readonly formatPeso = formatPeso;
 
   protected readonly plans = [
@@ -86,4 +88,6 @@ export class Home {
       cta: 'Join the community',
     },
   ];
+
+  ngOnInit() { this.productService.list().subscribe({ next: (products) => this.products.set(products) }); }
 }
