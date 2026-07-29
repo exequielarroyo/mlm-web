@@ -75,6 +75,8 @@ export class App {
   }
 
   ngOnInit() {
+    this.userService.initAuth();
+
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
       return;
     }

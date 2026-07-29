@@ -117,10 +117,10 @@
   <section class="mb-8">
     <h2 class="font-semibold dark:text-white mb-3">Available commission payouts</h2>
     <ul class="text-sm">
-      @for (recipientId of availableRecipients(); track recipientId) {
+      @for (recipient of availableRecipients(); track recipient.recipientId) {
         <li class="border-b border-line-light p-2 flex items-center justify-between gap-2">
-          <span class="font-mono text-xs">{{ recipientId }}</span>
-          <button class="btn-primary text-xs" (click)="createPayout(recipientId)">Create payout</button>
+          <span class="font-mono text-xs">{{ recipient.recipientId }}</span>
+          <button class="btn-primary text-xs" (click)="createPayout(recipient.recipientId)">Create payout</button>
         </li>
       }
       @empty {

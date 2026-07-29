@@ -17,8 +17,16 @@ export class UserService {
   /** JWT for bearer auth. Persisted to localStorage so the session survives refreshes. */
   readonly token = signal<string | null>(this.readToken());
   readonly currentUser = signal<User | null>(null);
+  readonly authLoading = signal(false);
   readonly isAuthenticated = computed(() => this.token() !== null);
   readonly isAdmin = computed(() => this.hasAdminRole(this.token()));
+
+  /** Called once from App.ngOnInit to restore session without blocking render. */
+  initAuth(): void {
+    if (!this.token()) return;
+    this.authLoading.set(true);
+    this.loadMe().subscribe({ complete: () => this.authLoading.set(false) });
+  }
 
   register(request: RegisterRequest): Observable<User> {
     return this.http.post<User>(`${API_BASE}/register`, request);

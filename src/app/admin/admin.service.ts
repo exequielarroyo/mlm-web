@@ -8,6 +8,7 @@ export interface AdminOrderLine { productName: string; quantity: number; lineSub
 export interface AdminOrder { id: string; buyerId: string; buyerName: string; status: string; paymentReference: string | null; productSubtotal: number; createdAt: string; lines: AdminOrderLine[]; }
 export interface AdminCommission { id: string; recipientId: string; amount: number; status: string; }
 export interface AdminPayout { id: string; amount: number; status: string; createdAt: string; }
+export interface AvailableRecipient { recipientId: string; amount: number; source: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -24,5 +25,6 @@ export class AdminService {
   commissions(): Observable<AdminCommission[]> { return this.http.get<AdminCommission[]>(`${API_BASE}/admin/commissions`); }
   payouts(): Observable<AdminPayout[]> { return this.http.get<AdminPayout[]>(`${API_BASE}/admin/payouts/`); }
   createPayout(recipientId: string): Observable<AdminPayout> { return this.http.post<AdminPayout>(`${API_BASE}/admin/payouts/`, { recipientId, commissionIds: null }); }
+  availableRecipients(): Observable<AvailableRecipient[]> { return this.http.get<AvailableRecipient[]>(`${API_BASE}/admin/available-recipients`); }
   markPayoutPaid(id: string): Observable<AdminPayout> { return this.http.post<AdminPayout>(`${API_BASE}/admin/payouts/${id}/paid`, {}); }
 }

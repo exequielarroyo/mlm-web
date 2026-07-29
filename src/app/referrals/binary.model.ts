@@ -26,4 +26,5 @@ export interface BinaryPair {
   pairsMatched: number;
   commissionAmount: number;
   createdAt: string;
+  paidAt: string | null;
 }

@@ -13,8 +13,13 @@ import { InDevelopment } from './in-development/in-development';
 import { Earnings } from './earnings/earnings';
 import { authGuard } from './auth/auth.guard';
 import { adminGuard } from './auth/admin.guard';
-import { Admin } from './admin/admin';
 import { Orders } from './orders/orders';
+import { AdminLayout } from './admin/admin-layout';
+import { AdminDashboard } from './admin/admin-dashboard';
+import { AdminProducts } from './admin/admin-products';
+import { AdminOrders } from './admin/admin-orders';
+import { AdminFinance } from './admin/admin-finance';
+import { AdminBinaryComponent } from './admin/admin-binary';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -28,7 +33,14 @@ export const routes: Routes = [
   { path: 'network', component: Network, canActivate: [authGuard] },
   { path: 'earnings', component: Earnings, canActivate: [authGuard] },
   { path: 'orders', component: Orders, canActivate: [authGuard] },
-  { path: 'admin', component: Admin, canActivate: [adminGuard] },
+  { path: 'admin', component: AdminLayout, canActivate: [adminGuard], children: [
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: 'dashboard', component: AdminDashboard },
+    { path: 'products', component: AdminProducts },
+    { path: 'orders', component: AdminOrders },
+    { path: 'finance', component: AdminFinance },
+    { path: 'binary', component: AdminBinaryComponent }
+  ] },
   // Any URL without a dedicated page shows the in-development placeholder.
   { path: '**', component: InDevelopment }
 ];

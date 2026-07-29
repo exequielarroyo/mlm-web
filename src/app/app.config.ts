@@ -1,24 +1,10 @@
-import {
-  ApplicationConfig,
-  PLATFORM_ID,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection,
-} from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 
 import { routes } from './app.routes';
 import { tokenInterceptor } from './auth/token.interceptor';
-import {
-  provideClientHydration,
-  withEventReplay,
-  withNoIncrementalHydration,
-} from '@angular/platform-browser';
-import { UserService } from './users/user.service';
+import { provideClientHydration, withEventReplay, withNoIncrementalHydration } from '@angular/platform-browser';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 
 export const appConfig: ApplicationConfig = {
@@ -28,13 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
     provideHttpClient(withFetch(), withInterceptors([tokenInterceptor])),
-    // Restore the session from the stored bearer token before the app renders (browser only).
-    provideAppInitializer(() => {
-      if (!isPlatformBrowser(inject(PLATFORM_ID))) {
-        return;
-      }
-      return firstValueFrom(inject(UserService).loadMe());
-    }),
     provideIonicAngular({}),
   ],
 };

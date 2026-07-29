@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AdminService, AdminProduct, AdminOrder, AdminCommission, AdminPayout } from './admin.service';
+import { AdminService, AdminProduct, AdminOrder, AdminCommission, AdminPayout, AvailableRecipient } from './admin.service';
 import { formatPeso } from '../products/product.model';
 import { UserService } from '../users/user.service';
 
@@ -14,6 +14,7 @@ export class Admin {
   protected readonly orders = signal<AdminOrder[]>([]);
   protected readonly commissions = signal<AdminCommission[]>([]);
   protected readonly payouts = signal<AdminPayout[]>([]);
+  protected readonly availableRecipients = signal<AvailableRecipient[]>([]);
   protected readonly message = signal('');
   protected readonly formatPeso = formatPeso;
   protected readonly draft = signal<Partial<AdminProduct>>({ name: '', price: 0, discountPercent: null, imageUrl: '' });
@@ -25,6 +26,7 @@ export class Admin {
   protected refresh() {
     this.admin.products().subscribe((x) => this.products.set(x)); this.admin.orders().subscribe((x) => this.orders.set(x));
     this.admin.commissions().subscribe((x) => this.commissions.set(x)); this.admin.payouts().subscribe((x) => this.payouts.set(x));
+    this.admin.availableRecipients().subscribe((x) => this.availableRecipients.set(x));
   }
 
   protected toggleOrder(id: string) {
@@ -45,7 +47,6 @@ export class Admin {
   protected archive(id: string) { this.admin.archiveProduct(id).subscribe({ next: () => { this.message.set('Product archived.'); this.refresh(); }, error: (err) => this.message.set(this.handleError(err, 'Unable to archive product.')) }); }
   protected complete(id: string) { this.admin.completeOrder(id).subscribe({ next: () => { this.message.set('Order completed and commissions created.'); this.refresh(); }, error: (err) => this.message.set(this.handleError(err, 'Unable to complete order.')) }); }
   protected refund(id: string) { this.admin.refundOrder(id).subscribe({ next: () => { this.message.set('Order refunded and commissions adjusted.'); this.refresh(); }, error: (err) => this.message.set(this.handleError(err, 'Unable to refund order.')) }); }
-  protected createPayout(recipientId: string) { this.admin.createPayout(recipientId).subscribe({ next: () => { this.message.set('Payout batch created.'); this.refresh(); }, error: (err) => this.message.set(this.handleError(err, 'No available commissions for this recipient.')) }); }
+  protected createPayout(recipientId: string) { this.admin.createPayout(recipientId).subscribe({ next: () => { this.message.set('Payout batch created.'); this.refresh(); }, error: (err) => this.message.set(this.handleError(err, 'No available commissions or binary pairs for this recipient.')) }); }
   protected pay(id: string) { this.admin.markPayoutPaid(id).subscribe({ next: () => { this.message.set('Payout marked paid.'); this.refresh(); }, error: (err) => this.message.set(this.handleError(err, 'Unable to mark payout paid.')) }); }
-  protected availableRecipients(): string[] { return [...new Set(this.commissions().filter((c) => c.status === 'Available').map((c) => c.recipientId))]; }
 }
