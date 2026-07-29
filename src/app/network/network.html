@@ -1,37 +1,171 @@
 <div class="xl:w-300 mx-auto px-4 py-8">
   <h1 class="font-roboto text-2xl font-semibold text-primary dark:text-white mb-1">Your network</h1>
-  <p class="text-sm text-gray-500 dark:text-white mb-6">
-    {{ totalCount() }} member(s) across {{ maxDepth() }} level(s).
-  </p>
 
-  @if (tree(); as root) {
-    <!-- Recursive node template -->
-    <ng-template #nodeTpl let-node>
-      <div class="flex items-center gap-2 py-1">
-        @if (node.level === 0) {
-          <span class="text-xs rounded bg-primary text-white px-2 py-0.5">You</span>
-        } @else {
-          <span class="text-xs rounded bg-primary/10 text-primary dark:text-white px-2 py-0.5">L{{ node.level }}</span>
-        }
-        <span class="font-medium">{{ node.name }}</span>
-        @if (node.username) {
-          <span class="text-gray-400 dark:text-white">&#64;{{ node.username }}</span>
-        }
-      </div>
+  <!-- Tab toggle -->
+  <div class="flex gap-2 mb-6 border-b border-line-light pb-2">
+    <button
+      type="button"
+      class="px-4 py-2 text-sm rounded transition"
+      [class.bg-primary]="activeTab() === 'unilevel'"
+      [class.text-white]="activeTab() === 'unilevel'"
+      [class.text-gray-500]="activeTab() !== 'unilevel'"
+      (click)="switchTab('unilevel')"
+    >
+      Unilevel
+    </button>
+    <button
+      type="button"
+      class="px-4 py-2 text-sm rounded transition"
+      [class.bg-primary]="activeTab() === 'binary'"
+      [class.text-white]="activeTab() === 'binary'"
+      [class.text-gray-500]="activeTab() !== 'binary'"
+      (click)="switchTab('binary')"
+    >
+      Binary
+    </button>
+  </div>
 
-      @if (node.children.length) {
-        <ul class="ml-4 border-l border-line-light pl-4">
-          @for (child of node.children; track child.id) {
-            <li>
-              <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: child }" />
-            </li>
+  <!-- ====== UNILEVEL TAB ====== -->
+  @if (activeTab() === 'unilevel') {
+    <p class="text-sm text-gray-500 dark:text-white mb-6">
+      {{ totalCount() }} member(s) across {{ maxDepth() }} level(s).
+    </p>
+
+    @if (tree(); as root) {
+      <ng-template #nodeTpl let-node>
+        <div class="flex items-center gap-2 py-1">
+          @if (node.level === 0) {
+            <span class="text-xs rounded bg-primary text-white px-2 py-0.5">You</span>
+          } @else {
+            <span class="text-xs rounded bg-primary/10 text-primary dark:text-white px-2 py-0.5">L{{ node.level }}</span>
           }
-        </ul>
-      }
-    </ng-template>
+          <span class="font-medium">{{ node.name }}</span>
+          @if (node.username) {
+            <span class="text-gray-400 dark:text-white">&#64;{{ node.username }}</span>
+          }
+        </div>
+        @if (node.children.length) {
+          <ul class="ml-4 border-l border-line-light pl-4">
+            @for (child of node.children; track child.id) {
+              <li>
+                <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: child }" />
+              </li>
+            }
+          </ul>
+        }
+      </ng-template>
+      <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: root }" />
+    } @else {
+      <p class="text-gray-500 dark:text-white">Loading your network…</p>
+    }
+  }
 
-    <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: root }" />
-  } @else {
-    <p class="text-gray-500 dark:text-white">Loading your network…</p>
+  <!-- ====== BINARY TAB ====== -->
+  @if (activeTab() === 'binary') {
+    <!-- Stats -->
+    @if (binaryStats(); as s) {
+      <section class="grid grid-cols-3 gap-4 mb-6">
+        <div class="rounded border border-line-light p-4">
+          <div class="text-2xl font-semibold text-primary dark:text-white">{{ s.leftCount }}</div>
+          <div class="text-sm text-gray-500 dark:text-white">Left leg</div>
+        </div>
+        <div class="rounded border border-line-light p-4">
+          <div class="text-2xl font-semibold text-primary dark:text-white">{{ s.rightCount }}</div>
+          <div class="text-sm text-gray-500 dark:text-white">Right leg</div>
+        </div>
+        <div class="rounded border border-line-light p-4">
+          <div class="text-2xl font-semibold text-primary dark:text-white">{{ s.matchedPairs }}</div>
+          <div class="text-sm text-gray-500 dark:text-white">Matched pairs</div>
+        </div>
+      </section>
+      <p class="text-sm text-gray-500 dark:text-white mb-6">
+        Total earned from pairs: <span class="font-semibold text-primary">{{ formatPeso(s.totalEarned) }}</span>
+      </p>
+    }
+
+    <!-- Binary tree -->
+    <section class="mb-8">
+      <h2 class="font-semibold dark:text-white mb-4">Binary tree</h2>
+      @if (binaryTree(); as b) {
+        <div class="flex flex-col items-center overflow-x-auto">
+          <!-- Root -->
+          <div class="flex flex-col items-center">
+            <div class="rounded border border-line-light bg-primary/5 p-3 min-w-[120px] text-center">
+              <div class="font-medium text-sm">{{ b.root?.firstName }} {{ b.root?.lastName }}</div>
+              @if (b.root?.username) {
+                <div class="text-xs text-gray-400">&#64;{{ b.root?.username }}</div>
+              }
+              <div class="flex justify-center gap-3 text-xs text-gray-500 mt-1">
+                <span>L: {{ b.root?.leftCount ?? 0 }}</span>
+                <span>R: {{ b.root?.rightCount ?? 0 }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connector lines -->
+          @if (b.left || b.right) {
+            <div class="flex w-full max-w-md relative h-8">
+              <div class="w-1/2 border-r border-t border-line-light"></div>
+              <div class="w-1/2 border-l border-t border-line-light"></div>
+            </div>
+          }
+
+          <!-- Children row -->
+          <div class="flex w-full max-w-md gap-4">
+            <!-- Left child -->
+            <div class="flex-1 flex flex-col items-center min-w-0">
+              @if (b.left; as node) {
+                <node-card [node]="node" />
+              } @else {
+                <div class="rounded border border-dashed border-line-light p-2 min-w-[90px] text-center">
+                  <span class="text-xs text-gray-400">Empty slot</span>
+                </div>
+              }
+            </div>
+            <!-- Right child -->
+            <div class="flex-1 flex flex-col items-center min-w-0">
+              @if (b.right; as node) {
+                <node-card [node]="node" />
+              } @else {
+                <div class="rounded border border-dashed border-line-light p-2 min-w-[90px] text-center">
+                  <span class="text-xs text-gray-400">Empty slot</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      } @else {
+        <p class="text-gray-500 dark:text-white">No binary tree data yet. Start referring to build your binary network.</p>
+      }
+    </section>
+
+    <!-- Pair commissions -->
+    <section>
+      <h2 class="font-semibold dark:text-white mb-3">Pair commission history</h2>
+      @if (binaryPairs().length) {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left border-b border-line-light">
+                <th class="p-2">Date</th>
+                <th class="p-2">Pairs matched</th>
+                <th class="p-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pair of binaryPairs(); track pair.id) {
+                <tr class="border-b border-line-light">
+                  <td class="p-2 text-gray-500">{{ pair.createdAt | date:'short' }}</td>
+                  <td class="p-2">{{ pair.pairsMatched }}</td>
+                  <td class="p-2 text-primary font-semibold">{{ formatPeso(pair.commissionAmount) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="text-sm text-gray-500 dark:text-white">No pair commissions yet.</p>
+      }
+    </section>
   }
 </div>

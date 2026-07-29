@@ -24,7 +24,7 @@
         <input type="checkbox" [checked]="item.selected" (change)="toggle(item.product.id)" />
 
         <div class="flex items-center gap-3 flex-1 min-w-48">
-          <img [src]="item.product.image" [alt]="item.product.name" class="h-14 w-14 object-cover shrink-0" />
+          <img [src]="item.product.imageUrl || 'https://picsum.photos/seed/product/400'" [alt]="item.product.name" class="h-14 w-14 object-cover shrink-0" />
           <span class="line-clamp-2 dark:text-white">{{ item.product.name }}</span>
         </div>
 
@@ -67,6 +67,37 @@
         <button type="button" (click)="checkout()" class="btn-primary px-8">Check Out</button>
       </div>
       @if (checkoutMessage()) { <p class="w-full text-sm text-primary">{{ checkoutMessage() }}</p> }
+    </div>
+  }
+
+  <!-- Payment Instructions Modal -->
+  @if (showInstructions()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white dark:bg-gray-900 rounded shadow-xl max-w-md w-full p-6 animate-in zoom-in duration-200">
+        <h2 class="font-roboto text-xl font-semibold mb-4 text-primary">Order Submitted!</h2>
+        <p class="text-sm text-gray-600 dark:text-white mb-6">
+          Please pay <span class="font-bold">{{ formatPeso(lastTotal()) }}</span> using one of the methods below:
+        </p>
+
+        <div class="space-y-4 mb-8">
+          <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded border border-line-light">
+            <div class="font-semibold text-sm">GCash</div>
+            <div class="text-lg text-primary">0912 345 6789</div>
+            <div class="text-xs text-gray-400">Account: Juan D.</div>
+          </div>
+          <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded border border-line-light">
+            <div class="font-semibold text-sm">BDO Bank Transfer</div>
+            <div class="text-lg text-primary">0012 3456 7890</div>
+            <div class="text-xs text-gray-400">Account: Pag-Unlad Inc.</div>
+          </div>
+        </div>
+
+        <p class="text-sm text-gray-500 mb-6">
+          Once paid, go to your <span class="font-semibold">My Orders</span> page and enter the transaction Reference Number to begin the verification process.
+        </p>
+
+        <a routerLink="/orders" class="btn-primary block w-full text-center py-3">Go to My Orders</a>
+      </div>
     </div>
   }
 </div>

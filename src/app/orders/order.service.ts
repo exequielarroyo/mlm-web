@@ -9,7 +9,10 @@ export class OrderService {
   create(lines: { productId: string; quantity: number }[]): Observable<unknown> {
     return this.http.post(`${API_BASE}/orders`, { lines });
   }
+  submitPayment(orderId: string, reference: string): Observable<unknown> {
+    return this.http.post(`${API_BASE}/orders/${orderId}/pay`, { reference });
+  }
   list(): Observable<MemberOrder[]> { return this.http.get<MemberOrder[]>(`${API_BASE}/orders`); }
 }
 
-export interface MemberOrder { id: string; status: string; productSubtotal: number; createdAt: string; lines: { productName: string; quantity: number; lineSubtotal: number }[]; }
+export interface MemberOrder { id: string; status: string; productSubtotal: number; createdAt: string; paymentReference: string | null; lines: { productName: string; quantity: number; lineSubtotal: number }[]; }

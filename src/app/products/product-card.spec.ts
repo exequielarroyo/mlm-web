@@ -5,7 +5,7 @@ import { CartService } from '../cart/cart.service';
 import { Product } from './product.model';
 
 describe('ProductCard', () => {
-  const product: Product = { id: 1, name: 'Test Product', price: 100, image: '', sold: 0 };
+  const product: Product = { id: '1', name: 'Test Product', price: 100, imageUrl: null, discountPercent: null };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ imports: [ProductCard] }).compileComponents();
@@ -21,6 +21,6 @@ describe('ProductCard', () => {
     button.click();
 
     expect(cart.count()).toBe(1);
-    expect(cart.items()[0].product.id).toBe(1);
+    expect(cart.items()[0].product.id).toBe('1');
   });
 });

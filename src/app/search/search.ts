@@ -2,7 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { ActivatedRoute } from '@angular/router';
 
 import { ProductCard } from '../products/product-card';
-import { PRODUCTS } from '../products/products.data';
+import { ProductService } from '../products/product.service';
 import { Product } from '../products/product.model';
 
 @Component({
@@ -13,18 +13,27 @@ import { Product } from '../products/product.model';
 })
 export class Search {
   private readonly route = inject(ActivatedRoute);
+  private readonly productService = inject(ProductService);
 
   protected readonly query = signal('');
   protected readonly results = signal<Product[]>([]);
+  private readonly allProducts = signal<Product[]>([]);
 
   ngOnInit() {
-    this.route.queryParamMap.subscribe((params) => {
-      const q = (params.get('q') ?? '').trim();
-      this.query.set(q);
-      const needle = q.toLowerCase();
-      this.results.set(
-        q ? PRODUCTS.filter((p) => p.name.toLowerCase().includes(needle)) : PRODUCTS,
-      );
+    this.productService.list().subscribe((products) => {
+      this.allProducts.set(products);
+      this.filter(this.route.snapshot.queryParamMap.get('q') ?? '');
     });
+    this.route.queryParamMap.subscribe((params) => {
+      this.filter((params.get('q') ?? '').trim());
+    });
+  }
+
+  private filter(q: string) {
+    this.query.set(q);
+    const needle = q.toLowerCase();
+    this.results.set(
+      q ? this.allProducts().filter((p) => p.name.toLowerCase().includes(needle)) : this.allProducts(),
+    );
   }
 }

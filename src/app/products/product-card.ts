@@ -16,6 +16,7 @@ export class ProductCard {
 
   protected readonly unitPrice = unitPrice;
   protected readonly formatPeso = formatPeso;
+  protected readonly placeholder = 'https://picsum.photos/seed/product/400';
 
   protected addToCart(): void {
     this.cart.add(this.product());

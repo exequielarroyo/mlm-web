@@ -1,6 +1,5 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { CartItem, CartService } from './cart.service';
 import { unitPrice, formatPeso } from '../products/product.model';
@@ -19,6 +18,8 @@ export class Cart {
   private readonly users = inject(UserService);
   private readonly router = inject(Router);
   protected readonly checkoutMessage = signal('');
+  protected readonly showInstructions = signal(false);
+  protected readonly lastTotal = signal(0);
 
   protected readonly items = this.cartService.items;
   protected readonly allSelected = this.cartService.allSelected;
@@ -64,8 +65,9 @@ export class Cart {
     const selected = this.items().filter((item) => item.selected);
     if (!this.users.isAuthenticated()) { this.router.navigate(['/login']); return; }
     if (selected.length === 0) { this.checkoutMessage.set('Select at least one product.'); return; }
+    this.lastTotal.set(this.selectedTotal());
     this.orders.create(selected.map((item) => ({ productId: String(item.product.id), quantity: item.qty }))).subscribe({
-      next: () => { this.cartService.removeSelected(); this.checkoutMessage.set('Order submitted. An administrator will confirm payment.'); },
+      next: () => { this.cartService.removeSelected(); this.showInstructions.set(true); },
       error: () => this.checkoutMessage.set('Unable to submit the order. Please try again.'),
     });
   }

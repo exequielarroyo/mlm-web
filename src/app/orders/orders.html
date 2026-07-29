@@ -1,1 +1,64 @@
-<div class="xl:w-300 mx-auto px-4 py-8"><h1 class="font-roboto text-2xl font-semibold text-primary dark:text-white mb-6">My orders</h1><div class="space-y-4">@for (order of orders(); track order.id) { <section class="rounded border border-line-light p-4"><div class="flex justify-between gap-4 mb-3"><span class="font-mono text-xs">{{ order.id }}</span><span class="text-primary font-semibold">{{ order.status }}</span></div>@for (line of order.lines; track line.productName) { <div class="flex justify-between text-sm py-1"><span>{{ line.productName }} × {{ line.quantity }}</span><span>{{ formatPeso(line.lineSubtotal) }}</span></div> }<div class="border-t border-line-light mt-2 pt-2 text-right font-semibold">{{ formatPeso(order.productSubtotal) }}</div></section> } @empty { <p class="text-gray-500">You have not submitted any orders yet.</p> }</div></div>
+<div class="xl:w-300 mx-auto px-4 py-8">
+  <h1 class="font-roboto text-2xl font-semibold text-primary dark:text-white mb-6">My orders</h1>
+  <div class="space-y-4">
+    @for (order of orders(); track order.id) {
+      <section class="rounded border border-line-light p-4">
+        <div class="flex justify-between gap-4 mb-3">
+          <span class="font-mono text-xs text-gray-400">{{ order.id }}</span>
+          <span class="text-xs rounded px-2 py-0.5 font-medium"
+            [class.bg-yellow-100]="order.status === 'PendingPayment'"
+            [class.text-yellow-700]="order.status === 'PendingPayment'"
+            [class.bg-green-100]="order.status === 'Completed'"
+            [class.text-green-700]="order.status === 'Completed'"
+            [class.bg-red-100]="order.status === 'Refunded'"
+            [class.text-red-700]="order.status === 'Refunded'">
+            {{ order.status }}
+          </span>
+        </div>
+        @for (line of order.lines; track line.productName) {
+          <div class="flex justify-between text-sm py-1">
+            <span class="dark:text-white">{{ line.productName }} × {{ line.quantity }}</span>
+            <span class="dark:text-white">{{ formatPeso(line.lineSubtotal) }}</span>
+          </div>
+        }
+        <div class="border-t border-line-light mt-2 pt-2 text-right font-semibold text-primary">
+          {{ formatPeso(order.productSubtotal) }}
+        </div>
+
+        @if (order.status === 'PendingPayment') {
+          <div class="mt-4 pt-4 border-t border-line-light">
+            @if (order.paymentReference) {
+              <div class="text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded border border-line-light">
+                <span class="text-gray-500">Payment under review:</span>
+                <span class="ml-2 font-mono font-semibold text-primary">#{{ order.paymentReference }}</span>
+              </div>
+            } @else {
+              <div class="flex flex-col gap-2">
+                <label class="text-xs text-gray-500">Enter Payment Reference Number (e.g. GCash Ref No.)</label>
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Ref #123456789"
+                    class="field-input flex-1"
+                    [value]="paymentRefs()[order.id] || ''"
+                    (input)="setRef(order.id, $event)"
+                  />
+                  <button
+                    type="button"
+                    class="btn-primary text-xs whitespace-nowrap"
+                    [disabled]="!paymentRefs()[order.id]"
+                    (click)="submitPayment(order.id)"
+                  >
+                    Submit Ref #
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    } @empty {
+      <p class="text-gray-500">You have not submitted any orders yet.</p>
+    }
+  </div>
+</div>

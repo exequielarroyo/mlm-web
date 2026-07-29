@@ -5,7 +5,7 @@ import { API_BASE } from '../users/user.service';
 
 export interface AdminProduct { id: string; name: string; imageUrl: string | null; price: number; discountPercent: number | null; isArchived: boolean; }
 export interface AdminOrderLine { productName: string; quantity: number; lineSubtotal: number; }
-export interface AdminOrder { id: string; buyerId: string; status: string; productSubtotal: number; createdAt: string; lines: AdminOrderLine[]; }
+export interface AdminOrder { id: string; buyerId: string; buyerName: string; status: string; paymentReference: string | null; productSubtotal: number; createdAt: string; lines: AdminOrderLine[]; }
 export interface AdminCommission { id: string; recipientId: string; amount: number; status: string; }
 export interface AdminPayout { id: string; amount: number; status: string; createdAt: string; }
 

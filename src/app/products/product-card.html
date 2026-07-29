@@ -1,9 +1,9 @@
 <div class="group bg-white dark:bg-gray-900 border border-line-light rounded-[2px] overflow-hidden hover:shadow-md transition flex flex-col">
   <div class="relative aspect-square bg-gray-100 dark:bg-gray-800">
-    <img [src]="product().image" [alt]="product().name" class="w-full h-full object-cover" loading="lazy" />
-    @if (product().discount) {
+    <img [src]="product().imageUrl || placeholder" [alt]="product().name" class="w-full h-full object-cover" loading="lazy" />
+    @if (product().discountPercent) {
       <span class="absolute top-0 right-0 bg-yellow-400 text-red-600 text-[11px] font-bold px-1 py-0.5">
-        -{{ product().discount }}%
+        -{{ product().discountPercent }}%
       </span>
     }
   </div>
@@ -13,12 +13,10 @@
 
     <div class="flex items-baseline gap-1 mt-1">
       <span class="text-primary font-semibold">{{ formatPeso(unitPrice(product())) }}</span>
-      @if (product().discount) {
+      @if (product().discountPercent) {
         <span class="text-xs text-gray-400 line-through">{{ formatPeso(product().price) }}</span>
       }
     </div>
-
-    <div class="text-xs text-gray-400 dark:text-white mt-1">{{ product().sold }} sold</div>
 
     <button type="button" (click)="addToCart()" class="btn-primary w-full mt-2 text-sm">
       Add to cart

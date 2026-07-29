@@ -1,16 +1,16 @@
 export interface Product {
-  id: string | number;
+  id: string;
   name: string;
   price: number;
-  image: string;
-  sold: number;
-  /** Optional discount percentage (0–100). */
-  discount?: number;
+  imageUrl: string | null;
+  discountPercent: number | null;
+  isArchived?: boolean;
+  createdAt?: string;
 }
 
 /** Effective unit price after any discount. */
 export function unitPrice(product: Product): number {
-  return product.discount ? Math.round(product.price * (1 - product.discount / 100)) : product.price;
+  return product.discountPercent ? Math.round(product.price * (1 - product.discountPercent / 100)) : product.price;
 }
 
 /** Formats a peso amount, e.g. 1299 -> "₱1,299". */
